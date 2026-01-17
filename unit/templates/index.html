@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Unit Converter</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .container {
+      display: flex;
+      gap: 30px;
+    }
+
+    .card {
+      width: 300px;
+      padding: 20px;
+      border: 2px solid #000;
+      border-radius: 8px;
+      background: #fff;
+    }
+
+    h2 {
+      margin-top: 0;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 20px;
+      font-weight: bold;
+    }
+
+    .tabs span {
+      cursor: pointer;
+    }
+
+    .tabs .active {
+      color: blue;
+      text-decoration: underline;
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      font-size: 14px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      box-sizing: border-box;
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 10px;
+      width: 120px;
+      border: 2px solid #000;
+      background: #fff;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .result-text {
+      margin-top: 40px;
+      font-size: 26px;
+      font-weight: bold;
+    }
+    .form-section {
+        display: none;
+        }
+
+    .form-section.active {
+        display: block;
+    }
+
+  </style>
+  <script>
+const units = {
+  length: [
+    ["cm", "Centimeter"],
+    ["m", "Meter"],
+    ["ft", "Feet"],
+    ["inch", "Inch"],
+    ["km", "Kilometer"],
+    ["yd", "Yard"],
+    ["mi", "Mile"]
+  ],
+  weight: [
+    ["mg", "Milligram"],
+    ["g", "Gram"],
+    ["kg", "Kilogram"],
+    ["oz", "Ounce"],
+    ["lb", "Pound"]
+  ],
+  temperature: [
+    ["c", "Celsius"],
+    ["f", "Fahrenheit"],
+    ["k", "Kelvin"]
+  ]
+};
+
+function populateUnits(type) {
+  const from = document.getElementById("fromUnit");
+  const to = document.getElementById("toUnit");
+
+  from.innerHTML = "";
+  to.innerHTML = "";
+
+  units[type].forEach(unit => {
+    from.add(new Option(unit[1], unit[0]));
+    to.add(new Option(unit[1], unit[0]));
+  });
+
+  document.getElementById("category").value = type;
+}
+
+function showTab(type) {
+  document.querySelectorAll(".tab").forEach(tab => tab.classList.remove("active"));
+  event.target.classList.add("active");
+  populateUnits(type);
+}
+
+// initialize default
+window.onload = () => populateUnits("length");
+</script>
+
+</head>
+<body>
+
+<div class="container">
+
+  <!-- LEFT PANEL -->
+   <form class="card" method="post" action="{% url 'handle_convert' %}">
+        {% csrf_token %}
+
+        <h2>Unit Converter</h2>
+
+        <div class="tabs">
+            <span class="tab active" onclick="showTab('length')">Length</span>
+            <span class="tab" onclick="showTab('weight')">Weight</span>
+            <span class="tab" onclick="showTab('temperature')">Temperature</span>
+        </div>
+
+        <!-- hidden category -->
+        <input type="hidden" name="category" id="category" value="length">
+
+        <label>Enter value</label>
+        <input type="number" name="value" step="any" required>
+
+        <label>Unit to convert from</label>
+        <select name="from_unit" id="fromUnit"></select>
+
+        <label>Unit to convert to</label>
+        <select name="to_unit" id="toUnit"></select>
+
+        <button type="submit">Convert</button>
+
+        {% if result %}
+            <div class="result-text">{{ result }}</div>
+        {% endif %}
+    </form>
+
+
+
+
+</div>
+
+</body>
+</html>
